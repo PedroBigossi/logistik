@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}View Delivery - Logistik{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-eye"></i> Delivery Details</h2>
+            <div>
+                <a href="{{ url_for('admin.edit_delivery', delivery_id=delivery.id) }}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Tracking Number: {{ delivery.tracking_number }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Status</h6>
+                        <p>
+                            {% if delivery.status == 'delivered' %}
+                                <span class="badge bg-success status-badge fs-6">Delivered</span>
+                            {% elif delivery.status == 'in_route' %}
+                                <span class="badge bg-primary status-badge fs-6">In Route</span>
+                            {% elif delivery.status == 'late' %}
+                                <span class="badge bg-warning text-dark status-badge fs-6">Late</span>
+                            {% else %}
+                                <span class="badge bg-secondary status-badge fs-6">Ongoing (Not Dispatched)</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Created</h6>
+                        <p>{{ delivery.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h5 class="mb-3">Recipient Information</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Name</h6>
+                        <p>{{ delivery.recipient_name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Phone</h6>
+                        <p>{{ delivery.recipient_phone }}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted">Address</h6>
+                    <p>{{ delivery.recipient_address }}</p>
+                </div>
+                
+                <hr>
+                
+                <h5 class="mb-3">Delivery Information</h5>
+                <div class="row mb-3">
+                    {% if delivery.weight %}
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Weight</h6>
+                        <p>{{ delivery.weight }} kg</p>
+                    </div>
+                    {% endif %}
+                    {% if delivery.estimated_delivery_date %}
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Estimated Delivery Date</h6>
+                        <p>{{ delivery.estimated_delivery_date.strftime('%Y-%m-%d') }}</p>
+                    </div>
+                    {% endif %}
+                    {% if delivery.actual_delivery_date %}
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Actual Delivery Date</h6>
+                        <p>{{ delivery.actual_delivery_date.strftime('%Y-%m-%d') }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if delivery.description %}
+                <div class="mb-3">
+                    <h6 class="text-muted">Description</h6>
+                    <p>{{ delivery.description }}</p>
+                </div>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Created By</h6>
+                        <p>{{ delivery.created_by.username }} ({{ delivery.created_by.role }})</p>
+                    </div>
+                    {% if delivery.updated_by %}
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Last Updated By</h6>
+                        <p>{{ delivery.updated_by.username }} ({{ delivery.updated_by.role }})</p>
+                        <small class="text-muted">on {{ delivery.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

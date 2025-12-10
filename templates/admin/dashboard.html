@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Logistik{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2"></i> Admin Dashboard</h2>
+    <a href="{{ url_for('admin.create_delivery') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> New Delivery
+    </a>
+</div>
+
+<!-- Status Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Total Deliveries</h5>
+                <h2 class="mb-0">{{ status_counts.total }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-secondary">
+            <div class="card-body">
+                <h5 class="card-title">Ongoing</h5>
+                <h2 class="mb-0">{{ status_counts.ongoing }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">In Route</h5>
+                <h2 class="mb-0">{{ status_counts.in_route }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Late</h5>
+                <h2 class="mb-0">{{ status_counts.late }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deliveries Table -->
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Deliveries</h5>
+    </div>
+    <div class="card-body">
+        {% if deliveries %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Tracking #</th>
+                            <th>Recipient</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for delivery in deliveries %}
+                        <tr>
+                            <td><strong>{{ delivery.tracking_number }}</strong></td>
+                            <td>{{ delivery.recipient_name }}</td>
+                            <td>{{ delivery.recipient_address[:50] }}{% if delivery.recipient_address|length > 50 %}...{% endif %}</td>
+                            <td>
+                                {% if delivery.status == 'delivered' %}
+                                    <span class="badge bg-success status-badge">Delivered</span>
+                                {% elif delivery.status == 'in_route' %}
+                                    <span class="badge bg-primary status-badge">In Route</span>
+                                {% elif delivery.status == 'late' %}
+                                    <span class="badge bg-warning text-dark status-badge">Late</span>
+                                {% else %}
+                                    <span class="badge bg-secondary status-badge">Ongoing</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ delivery.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.view_delivery', delivery_id=delivery.id) }}" 
+                                   class="btn btn-sm btn-info" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ url_for('admin.edit_delivery', delivery_id=delivery.id) }}" 
+                                   class="btn btn-sm btn-warning" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('admin.delete_delivery', delivery_id=delivery.id) }}" 
+                                      class="d-inline" onsubmit="return confirm('Are you sure you want to delete this delivery?');">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No deliveries found. Create your first delivery to get started!
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

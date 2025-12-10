@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Update Status - Logistik{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="bi bi-arrow-repeat"></i> Update Delivery Status
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6 class="text-muted">Tracking Number</h6>
+                    <p class="fs-5"><strong>{{ delivery.tracking_number }}</strong></p>
+                    
+                    <h6 class="text-muted">Recipient</h6>
+                    <p>{{ delivery.recipient_name }}</p>
+                    
+                    <h6 class="text-muted">Current Status</h6>
+                    <p>
+                        {% if delivery.status == 'delivered' %}
+                            <span class="badge bg-success status-badge fs-6">Delivered</span>
+                        {% elif delivery.status == 'in_route' %}
+                            <span class="badge bg-primary status-badge fs-6">In Route</span>
+                        {% elif delivery.status == 'late' %}
+                            <span class="badge bg-warning text-dark status-badge fs-6">Late</span>
+                        {% else %}
+                            <span class="badge bg-secondary status-badge fs-6">Ongoing (Not Dispatched)</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <hr>
+                
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.status.label(class="form-label") }}
+                        {{ form.status(class="form-select" + (" is-invalid" if form.status.errors else "")) }}
+                        {% if form.status.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.status.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Select the new status for this delivery. If you select "Delivered", the actual delivery date will be set automatically.
+                        </small>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle"></i> Update Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
