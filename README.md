@@ -89,7 +89,7 @@ Logistik/
 
 1. Clone o repositório:
    ```bash
-   git clone <seu-repositorio>
+   git clone https://github.com/PedroBigossi/logistik.git
 Crie um ambiente virtual:
 
 bash
@@ -150,35 +150,23 @@ Atualiza status das entregas
 O projeto utiliza SQLite por padrão (logistik.db).
 Para alterar para PostgreSQL/MySQL, modifique o SQLALCHEMY_DATABASE_URI em config.py.
 
-🔒 Segurança
-Troque o SECRET_KEY antes de colocar em produção
-
-Altere as senhas padrão
-
-Senhas armazenadas com hashing (Werkzeug)
-
-CSRF Protection habilitado (Flask-WTF)
-
-🧩 Customização
+## 🧩 Customização
 Novos status → atualizar forms.py e templates
 
 Novos campos → alterar modelo em models.py + forms + templates
 
 Novo layout → editar classes Bootstrap no base.html
 
-🐛 Problemas Comuns
+## 🐛 Problemas Comuns
 Problema	Solução
 Erros no banco	Deletar logistik.db e rodar init_db.py
 Import errors	pip install -r requirements.txt
 Porta ocupada	app.run(debug=True, port=5001)
 
-📜 License
+## 📜 License
 Projeto liberado para uso educacional e empresarial.
 
-💬 Suporte
+## 💬 Suporte
 O código inclui comentários detalhados explicando cada parte da aplicação.
-
-yaml
-Copiar código
 
 ---
