@@ -64,19 +64,72 @@ def index():
 # Lazy database initialization - will happen on first request
 # This prevents crashes during serverless cold starts
 _db_initialized = False
+_users_initialized = False
 
 @app.before_request
 def ensure_db_initialized():
     """Ensure database is initialized before handling requests."""
-    global _db_initialized
+    global _db_initialized, _users_initialized
     if not _db_initialized:
         try:
             with app.app_context():
+                # Create all database tables
                 db.create_all()
                 _db_initialized = True
         except Exception as e:
             print(f"Database initialization failed: {e}")
             _db_initialized = True
+    
+    # Create demo users only if database is empty (first time setup)
+    # SECURITY: Use environment variables for production credentials
+    if not _users_initialized and _db_initialized:
+        try:
+            with app.app_context():
+                # Only create demo users if no users exist in the database
+                user_count = User.query.count()
+                if user_count == 0:
+                    import os
+                    
+                    # Get admin credentials from environment variables or use defaults
+                    admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
+                    admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+                    admin_email = os.environ.get('ADMIN_EMAIL', 'admin@logistik.com')
+                    
+                    # Get regular user credentials from environment variables or use defaults
+                    user_username = os.environ.get('USER_USERNAME', 'user')
+                    user_password = os.environ.get('USER_PASSWORD', 'user123')
+                    user_email = os.environ.get('USER_EMAIL', 'user@logistik.com')
+                    
+                    # Create admin user
+                    admin = User(
+                        username=admin_username,
+                        email=admin_email,
+                        role='admin'
+                    )
+                    admin.set_password(admin_password)
+                    db.session.add(admin)
+                    
+                    # Create regular user
+                    user = User(
+                        username=user_username,
+                        email=user_email,
+                        role='user'
+                    )
+                    user.set_password(user_password)
+                    db.session.add(user)
+                    
+                    db.session.commit()
+                    
+                    # Security warning if using default credentials
+                    if admin_password == 'admin123' or user_password == 'user123':
+                        print("⚠️  SECURITY WARNING: Using default demo credentials!")
+                        print("⚠️  Set ADMIN_PASSWORD and USER_PASSWORD environment variables in production!")
+                    else:
+                        print(f"Users created: {admin_username} and {user_username}")
+                _users_initialized = True
+        except Exception as e:
+            print(f"User initialization failed: {e}")
+            _users_initialized = True
 
 
 if __name__ == '__main__':
