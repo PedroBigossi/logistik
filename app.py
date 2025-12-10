@@ -51,9 +51,26 @@ def index():
     return redirect('/auth/login')
 
 
-# Create database tables
-with app.app_context():
-    db.create_all()
+# Create database tables (with error handling for serverless)
+def init_db():
+    """Initialize database tables if they don't exist."""
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            # Log error but don't crash the app (important for serverless)
+            print(f"Database initialization warning: {e}")
+
+
+# Try to initialize database on app import
+# This will work for local development and may work for serverless
+# depending on database configuration
+try:
+    init_db()
+except Exception:
+    # If initialization fails (e.g., database not available yet),
+    # the app will still start and can retry on first request
+    pass
 
 
 if __name__ == '__main__':
