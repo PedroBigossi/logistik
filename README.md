@@ -87,67 +87,63 @@ Logistik/
 
 ### ✔ Passo a passo
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/PedroBigossi/logistik.git
-Crie um ambiente virtual:
+**1. Clone o repositório:**
+```bash
+git clone https://github.com/PedroBigossi/logistik.git
+```
+**Crie um ambiente virtual:**
 
-bash
-Copiar código
+```bash
 python -m venv venv
-Ative o ambiente:
+```
+**Ative o ambiente:**
 
-Windows
+>Windows
 
-bash
-Copiar código
+```
 venv\Scripts\activate
-Linux/Mac
+```
+> Linux/Mac
 
-bash
-Copiar código
+```
 source venv/bin/activate
-Instale as dependências:
+```
+**Instale as dependências:**
 
-bash
-Copiar código
+```
 pip install -r requirements.txt
-Inicialize o banco de dados:
+```
+**Inicialize o banco de dados:**
 
-bash
-Copiar código
+```bash
 python init_db.py
+```
 Usuários padrão criados:
 
-Admin → admin / admin123
+- Admin → admin / admin123
 
-User → user / user123
+- User → user / user123
 
-Execute a aplicação:
-
-bash
-Copiar código
+**Execute a aplicação:**
+```bash
 python app.py
-Acesse no navegador:
+```
+**Acesse no navegador:**
 👉 http://localhost:5000
 
-📌 Como Usar
-Admin
-Gerencia todas as entregas no dashboard
+## 📌 Como Usar
+### Admin
+1. Gerencia todas as entregas no dashboard
+2. Cria novas entregas
+3. Edita/exclui entregas
+4. Cadastra usuários
 
-Cria novas entregas
+### User
+1.Visualiza todas as entregas
+2. Atualiza status das entregas
 
-Edita/exclui entregas
-
-Cadastra usuários
-
-User
-Visualiza todas as entregas
-
-Atualiza status das entregas
-
-🗄 Banco de Dados
-O projeto utiliza SQLite por padrão (logistik.db).
+## 🗄 Banco de Dados
+O projeto utiliza **SQLite** por padrão (logistik.db).
 Para alterar para PostgreSQL/MySQL, modifique o SQLALCHEMY_DATABASE_URI em config.py.
 
 ## 🧩 Customização
