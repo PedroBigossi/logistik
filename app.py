@@ -26,7 +26,11 @@ login_manager.login_message_category = 'info'
 @login_manager.user_loader
 def load_user(user_id):
     """Load user by ID for Flask-Login."""
-    return User.query.get(int(user_id))
+    try:
+        return User.query.get(int(user_id))
+    except Exception:
+        # If database is not available, return None
+        return None
 
 
 # Register blueprints
@@ -37,6 +41,12 @@ from routes.user import user_bp
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 app.register_blueprint(user_bp, url_prefix='/user')
+
+
+@app.route('/health')
+def health():
+    """Health check endpoint that doesn't require database."""
+    return {'status': 'ok', 'message': 'Flask app is running'}, 200
 
 
 @app.route('/')
@@ -51,26 +61,22 @@ def index():
     return redirect('/auth/login')
 
 
-# Create database tables (with error handling for serverless)
-def init_db():
-    """Initialize database tables if they don't exist."""
-    with app.app_context():
+# Lazy database initialization - will happen on first request
+# This prevents crashes during serverless cold starts
+_db_initialized = False
+
+@app.before_request
+def ensure_db_initialized():
+    """Ensure database is initialized before handling requests."""
+    global _db_initialized
+    if not _db_initialized:
         try:
-            db.create_all()
+            with app.app_context():
+                db.create_all()
+                _db_initialized = True
         except Exception as e:
-            # Log error but don't crash the app (important for serverless)
-            print(f"Database initialization warning: {e}")
-
-
-# Try to initialize database on app import
-# This will work for local development and may work for serverless
-# depending on database configuration
-try:
-    init_db()
-except Exception:
-    # If initialization fails (e.g., database not available yet),
-    # the app will still start and can retry on first request
-    pass
+            print(f"Database initialization failed: {e}")
+            _db_initialized = True
 
 
 if __name__ == '__main__':
